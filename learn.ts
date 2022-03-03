@@ -23,9 +23,13 @@ function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
 const name1 = getProperty(p1, "name");
 
 /** ts中也可以使用访问操作符，获取interface中对应属性的类型*/
+// 获取类型中对应key的类型
 const name2: Person1["name"] = "123";
 
-/** in */
+/** in
+ *  1. 用来遍历枚举、联合类型
+ *  2. 在类型保护中，可以用来判断key是否在某个对象中
+ */
 enum Letter {
   A,
   B,
@@ -52,6 +56,7 @@ type PropertyObject = {
 //     age: string;
 //     phoneNum: string;
 // }
+
 
 /** 数字枚举可以反向映射，其原理如下 */
 enum Direction {
@@ -115,7 +120,7 @@ const obj1: ITest1 = {
 
 /** extends的用法 */
 // 1.interface继承
-// 2.泛型约束
+// 2.类型约束关系,A extends B，A必须可以分配给B，A是B的子类型
 interface MyInter {
   length: number;
 }
@@ -216,7 +221,6 @@ let foo: any;
 let bar1 = <string>foo; // 现在 bar 的类型是 'string'
 
 // 2. as，推荐使用
-
 
 /** Freshness
  * 概念：https://jkchao.github.io/typescript-book-chinese/typings/freshness.html#%E5%85%81%E8%AE%B8%E9%A2%9D%E5%A4%96%E7%9A%84%E5%B1%9E%E6%80%A7
@@ -405,3 +409,22 @@ let dog = new Dogg("旺财");
 dog.say(); //‘旺购wang wang wang'
 console.log(dog.age); // 1
 console.log(Dogg.age2); // 2
+
+
+
+/** 类型和值操作不要搞混！！！ */
+// 这是一个字面量类型
+type Tup = ["a", "b", "c"];
+// 如下通过索引 来获取对应位置类型，这里拿到的是字面量类型'a',Tup是类型！！！
+type a = Tup[0];
+// 可以根据key获取到其类型,length是数组的属性
+type length = Tup["length"];
+
+// 字面量extends
+type b = 1;
+type c = 0;
+// 这里0、1都是类型，不要将其认为是值
+// 1不是0的子类型，
+type d = b extends c ? '11' : '22'; // '11' '22'都是类型
+// 字面量1 肯定是number的子类型,故e的类型是字面量'11'
+type e = b extends number ? '11' : '22';
